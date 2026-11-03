@@ -254,8 +254,8 @@ footer .wrap { padding-block: 18px 22px; display: flex; flex-wrap: wrap; justify
               <span class="desc">Tu as déjà ton design, prêt à imprimer : je crée ta page avec tes liens, dans tes couleurs.</span>
             </button>
             <button type="button" class="offer" role="radio" aria-checked="false" data-offer="design">
-              <span class="row"><span class="name">Carte + page + design</span><span class="price">110 €</span></span>
-              <span class="desc">Je crée le design de ta carte et ta page. Un aller-retour de modifications inclus.</span>
+              <span class="row"><span class="name">Carte + page + design</span><span class="price">110 €<small style="display:block;font-family:var(--body);font-size:11.5px;font-weight:700;letter-spacing:0;text-align:right">en 2 fois</small></span></span>
+              <span class="desc">Je crée le design de ta carte et ta page. Un aller-retour de modifications inclus. Payé en 2 fois : 50 € aujourd'hui, puis 60 € pour le design, facturés après l'appel.</span>
             </button>
             <button type="button" class="offer" role="radio" aria-checked="false" data-offer="pack">
               <span class="row"><span class="name">Pack identité</span><span class="price">400 €<small style="display:block;font-family:var(--body);font-size:11.5px;font-weight:700;letter-spacing:0;text-align:right">en 2 fois</small></span></span>
@@ -439,13 +439,13 @@ footer .wrap { padding-block: 18px 22px; display: flex; flex-wrap: wrap; justify
       https://attilio-design.com/commander/#appel */
 var STRIPE_LINKS = {
   "base-none":    "https://buy.stripe.com/9B6eV5cq45LCaAU8p00VO00",
-  "design-none":  "https://buy.stripe.com/3cI4greyca1S38sdJk0VO01",
+  "design-none":  "https://buy.stripe.com/cNi5kvahW2zq9wQ5cO0VO0i",
   "pack-none":    "https://buy.stripe.com/aFaeV575K4HyeRa6gS0VO0f",
   "base-year":    "https://buy.stripe.com/3cIaEP61Gca024o34G0VO03",
-  "design-year":  "https://buy.stripe.com/8x25kvahW4Hy5gA7kW0VO04",
+  "design-year":  "https://buy.stripe.com/3cI3cn4XCei88sM5cO0VO0j",
   "pack-year":    "https://buy.stripe.com/9B628jbm04HydN66gS0VO0g",
   "base-month":   "https://buy.stripe.com/eVqfZ9fCgfmc4cwax80VO09",
-  "design-month": "https://buy.stripe.com/3cIaEP1Lq1vmfVeeNo0VO0a",
+  "design-month": "https://buy.stripe.com/8x2eV575Ka1S38s20C0VO0k",
   "pack-month":   "https://buy.stripe.com/cNi14ffCg2zq6kE48K0VO0h"
 };
 /* 2. Ta page de réservation d'appel (Cal.com ou agenda Google). */
@@ -456,8 +456,8 @@ var FORM_ENDPOINT = "https://formspree.io/f/xojyjglz";
 
 var OFFERS = {
   base:   { name: "Carte + page", price: 50 },
-  design: { name: "Carte + page + design", price: 110 },
-  pack:   { name: "Pack identité", price: 50, later: 350 }
+  design: { name: "Carte + page + design", price: 50, later: 60, laterText: "Puis <b>60 €</b> pour le design de ta carte, facturés après l'appel." },
+  pack:   { name: "Pack identité", price: 50, later: 350, laterText: "Puis <b>350 €</b> pour ton logo, facturés directement par notre designer après l'appel." }
 };
 var PLANS = {
   year:  { name: "Tranquillité, 49 €/an", short: "Tranquillité", price: 49, note: "Payé en une fois pour 12 mois. Non remboursable." },
@@ -491,7 +491,7 @@ function render() {
   out("ctaLabel", state.step === 3 ? "Payer " + fmt(t.total) : CTA[state.step]);
   out("ref", ref);
   out("payLabel", t.o.later ? "À payer aujourd'hui" : "À payer");
-  document.querySelectorAll("[data-later]").forEach(function (el) { el.hidden = !t.o.later; });
+  document.querySelectorAll("[data-later]").forEach(function (el) { el.hidden = !t.o.later; if (t.o.laterText) el.innerHTML = t.o.laterText; });
   out("myLink", state.myCode ? myLink() : "");
   document.getElementById("shareBox").hidden = !(state.step === 4 && state.myCode);
   out("nom", state.info.nom || "");
@@ -560,7 +560,7 @@ function pay() {
   save();
   var payload = {
     _subject: "Nouvelle commande carte NFC — " + (state.info.nom || ""), source: "Commande carte NFC",
-    formule: t.o.name, abonnement: t.p ? t.p.name : "Aucun", total: fmt(t.total), parrain: ref || "Aucun", reste_a_facturer_par_le_designer: t.o.later ? fmt(t.o.later) + " (logo)" : "Rien", code_parrainage_du_client: state.myCode, lien_parrainage_du_client: myLink(),
+    formule: t.o.name, abonnement: t.p ? t.p.name : "Aucun", total: fmt(t.total), parrain: ref || "Aucun", reste_a_facturer_apres_appel: t.o.later ? fmt(t.o.later) + (state.offer === "pack" ? " (logo, facturé par le designer)" : " (design de la carte)") : "Rien", code_parrainage_du_client: state.myCode, lien_parrainage_du_client: myLink(),
     nom: state.info.nom, activite: state.info.activite, email: state.info.email, telephone: state.info.telephone,
     liens: state.info.liens, adresse: state.info.adresse, message: state.info.message || ""
   };
