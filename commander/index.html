@@ -255,14 +255,14 @@ footer .wrap { padding-block: 18px 22px; display: flex; flex-wrap: wrap; justify
           <div class="sub-head">
             <div>
               <div class="sub-title" id="h-sub">Abonnement Tranquillité</div>
-              <div class="sub-sub">49 €/an ou 6,99 €/mois, en option</div>
+              <div class="sub-sub">49 €/an ou 6,99 €/mois (3 mois minimum), en option</div>
             </div>
             <button type="button" class="switch" id="subSwitch" role="switch" aria-checked="false" aria-labelledby="h-sub"></button>
           </div>
           <div id="planBox" hidden>
             <div class="plans" role="radiogroup" aria-label="Rythme de paiement">
               <button type="button" class="plan" role="radio" aria-checked="true" data-plan="year"><span class="pl-l">À l'année</span><span class="pl-p">49 €</span></button>
-              <button type="button" class="plan" role="radio" aria-checked="false" data-plan="month"><span class="pl-l">Au mois</span><span class="pl-p">6,99 €</span></button>
+              <button type="button" class="plan" role="radio" aria-checked="false" data-plan="month"><span class="pl-l">Au mois · 3 mois min.</span><span class="pl-p">6,99 €</span></button>
             </div>
             <p class="plan-note" id="planNote">Payé en une fois pour 12 mois. Non remboursable.</p>
           </div>
@@ -280,7 +280,7 @@ footer .wrap { padding-block: 18px 22px; display: flex; flex-wrap: wrap; justify
             <details><summary>Ça marche avec tous les téléphones ?</summary><p>Oui, avec tous les iPhone récents et la grande majorité des Android, sans application. La personne approche ta carte, ta page s'ouvre.</p></details>
             <details><summary>Je peux modifier ma page après ?</summary><p>Oui. Sans abonnement, chaque modification coûte 20 €. Avec l'abonnement Tranquillité, c'est illimité. Ta carte n'a jamais besoin d'être réimprimée.</p></details>
             <details><summary>Comment se passe la suite après le paiement ?</summary><p>Tu réserves directement un appel de 15 minutes en visio. On définit ton design et ta page ensemble, puis ta carte est imprimée et envoyée chez toi.</p></details>
-            <details><summary>L'abonnement est remboursable ?</summary><p>L'abonnement à l'année est payé en une fois et n'est pas remboursable. L'abonnement au mois est sans engagement : tu arrêtes quand tu veux.</p></details>
+            <details><summary>L'abonnement est remboursable ?</summary><p>L'abonnement à l'année est payé en une fois et n'est pas remboursable. L'abonnement au mois demande 3 mois minimum, payés d'avance à la commande (20,97 €). Ensuite, c'est 6,99 €/mois et tu arrêtes quand tu veux.</p></details>
           </div>
         </section>
       </div>
@@ -351,7 +351,7 @@ footer .wrap { padding-block: 18px 22px; display: flex; flex-wrap: wrap; justify
         </div>
         <label class="check" for="f-cgv">
           <input id="f-cgv" type="checkbox">
-          <span>J'ai compris que l'abonnement à l'année n'est pas remboursable et que la carte est fabriquée sur mesure.</span>
+          <span>J'ai compris que l'abonnement n'est pas remboursable (à l'année : 12 mois, au mois : 3 mois minimum) et que la carte est fabriquée sur mesure.</span>
         </label>
         <p class="secure"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Paiement sécurisé par Stripe. Carte bancaire, Apple Pay, Google Pay.</p>
       </div>
@@ -419,9 +419,9 @@ var STRIPE_LINKS = {
   "base-year":    "https://buy.stripe.com/3cIaEP61Gca024o34G0VO03",
   "design-year":  "https://buy.stripe.com/8x25kvahW4Hy5gA7kW0VO04",
   "pack-year":    "https://buy.stripe.com/fZu9ALfCg5LC6kEdJk0VO05",
-  "base-month":   "https://buy.stripe.com/28E14f89Oei810kfRs0VO06",
-  "design-month": "https://buy.stripe.com/28EfZ94XCgqgfVe48K0VO07",
-  "pack-month":   "https://buy.stripe.com/3cIcMX2Pu6PGdN68p00VO08"
+  "base-month":   "https://buy.stripe.com/eVqfZ9fCgfmc4cwax80VO09",
+  "design-month": "https://buy.stripe.com/3cIaEP1Lq1vmfVeeNo0VO0a",
+  "pack-month":   "https://buy.stripe.com/aFa9ALeyc7TK10k48K0VO0b"
 };
 /* 2. Ta page de réservation d'appel (Cal.com ou agenda Google). */
 var BOOKING_URL = "https://calendar.google.com/calendar/appointments/schedules/AcZssZ00pkzScW_yErgPcU6eJ9lfHO2X0UV1wc1Uux1koNsd8Pw4-CZjPq6i974W0pW2ynDxHqU_J49A?gv=true";
@@ -436,7 +436,7 @@ var OFFERS = {
 };
 var PLANS = {
   year:  { name: "Tranquillité, 49 €/an", short: "Tranquillité", price: 49, note: "Payé en une fois pour 12 mois. Non remboursable." },
-  month: { name: "Tranquillité, 6,99 €/mois", short: "Tranquillité", price: 6.99, note: "Prélevé chaque mois. Sans engagement, tu arrêtes quand tu veux." }
+  month: { name: "Tranquillité, 6,99 €/mois (3 mois payés d'avance)", short: "Tranquillité", price: 20.97, note: "3 mois minimum, payés d'avance aujourd'hui (20,97 €). Ensuite 6,99 €/mois, sans engagement : tu arrêtes quand tu veux." }
 };
 var CTA = { 1: "Continuer", 2: "Passer au paiement", 3: "Payer", 4: "" };
 var STORE = "attilio-commande";
