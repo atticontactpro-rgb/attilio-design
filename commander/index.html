@@ -172,6 +172,16 @@ section { min-width: 0; }
 .small { margin: 0; font-size: 13.5px; color: var(--muted); }
 .small a { font-weight: 700; }
 
+/* Parrainage */
+.share { background: var(--ink); color: var(--white); border: 2px solid var(--ink); box-shadow: 4px 5px 0 var(--red); padding: 18px 16px; display: grid; gap: 12px; max-width: 640px; }
+.share h2 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 26px; text-transform: uppercase; line-height: 1; }
+.share h2 em { font-style: normal; color: #ff4a3d; }
+.share p { margin: 0; font-size: 14.5px; color: #d8d4d0; }
+.share .link-box { background: var(--white); color: var(--ink); padding: 12px 14px; font-weight: 800; font-size: 14.5px; overflow-wrap: anywhere; }
+.share .btns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.share button { min-height: 48px; border: 2px solid var(--white); background: var(--red); color: var(--white); font-family: var(--display); font-size: 18px; letter-spacing: .04em; text-transform: uppercase; cursor: pointer; }
+.share button.ghost { background: transparent; }
+.share button:hover { background: var(--white); color: var(--ink); }
 footer { border-top: 2px solid var(--ink); }
 footer .wrap { padding-block: 18px 22px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); }
 @media (max-width: 899px) { body.has-bar footer { padding-bottom: 140px; } }
@@ -377,6 +387,15 @@ footer .wrap { padding-block: 18px 22px; display: flex; flex-wrap: wrap; justify
           </div>
         </div>
         <p class="small" id="agendaLink" hidden>L'agenda ne s'affiche pas ? <a id="agendaA" href="#" target="_blank" rel="noopener">Ouvre-le dans un nouvel onglet</a>.</p>
+        <div class="share" id="shareBox" hidden>
+          <h2>Gagne <em>5 €</em> par ami</h2>
+          <p>Partage ton lien. Chaque personne qui commande sa carte avec, c'est 5 € pour toi, remboursés sur ta carte bancaire une fois sa carte livrée.</p>
+          <div class="link-box" data-out="myLink"></div>
+          <div class="btns">
+            <button type="button" id="copyBtn">Copier</button>
+            <button type="button" class="ghost" id="shareBtn">Partager</button>
+          </div>
+        </div>
         <p class="small">Ton reçu de paiement arrive par email. Une question ? Écris à atti.contactpro@gmail.com.</p>
       </div>
     </div>
@@ -440,10 +459,11 @@ var PLANS = {
 };
 var CTA = { 1: "Continuer", 2: "Passer au paiement", 3: "Payer", 4: "" };
 var STORE = "attilio-commande";
-var state = { step: 1, offer: "base", sub: false, plan: "year", info: {} };
+var state = { step: 1, offer: "base", sub: false, plan: "year", info: {}, myCode: "" };
+var SITE = "https://attilio-design.com/commander/";
 
-function save() { try { localStorage.setItem(STORE, JSON.stringify({ offer: state.offer, sub: state.sub, plan: state.plan, info: state.info })); } catch (e) {} }
-function load() { try { var d = JSON.parse(localStorage.getItem(STORE) || "null"); if (d) { state.offer = d.offer || "base"; state.sub = !!d.sub; state.plan = d.plan || "year"; state.info = d.info || {}; } } catch (e) {} }
+function save() { try { localStorage.setItem(STORE, JSON.stringify({ offer: state.offer, sub: state.sub, plan: state.plan, info: state.info, myCode: state.myCode })); } catch (e) {} }
+function load() { try { var d = JSON.parse(localStorage.getItem(STORE) || "null"); if (d) { state.offer = d.offer || "base"; state.sub = !!d.sub; state.plan = d.plan || "year"; state.info = d.info || {}; state.myCode = d.myCode || ""; } } catch (e) {} }
 function fmt(n) { return (Number.isInteger(n) ? String(n) : n.toFixed(2).replace(".", ",")) + " €"; }
 function out(key, val) { document.querySelectorAll('[data-out="' + key + '"]').forEach(function (el) { el.textContent = val; }); }
 
@@ -464,6 +484,8 @@ function render() {
   out("miniName", t.o.name + (t.p ? " + Tranquillité" : ""));
   out("ctaLabel", state.step === 3 ? "Payer " + fmt(t.total) : CTA[state.step]);
   out("ref", ref);
+  out("myLink", state.myCode ? myLink() : "");
+  document.getElementById("shareBox").hidden = !(state.step === 4 && state.myCode);
   out("nom", state.info.nom || "");
   out("email", state.info.email || "");
   out("adresse", state.info.adresse || "");
@@ -512,14 +534,25 @@ function fillForm() {
   Object.keys(state.info).forEach(function (k) { if (f.elements[k]) f.elements[k].value = state.info[k]; });
 }
 
+function makeCode() {
+  var first = (state.info.nom || "").split(" ")[0] || "AMI";
+  try { first = first.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); } catch (e) {}
+  first = first.replace(/[^A-Za-z]/g, "").toUpperCase().slice(0, 8) || "AMI";
+  var chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789", tail = "";
+  for (var i = 0; i < 3; i++) tail += chars.charAt(Math.floor(Math.random() * chars.length));
+  return first + tail;
+}
+function myLink() { return SITE + "?ref=" + state.myCode; }
+
 function pay() {
   if (!document.getElementById("f-cgv").checked) { note("Coche la case juste au-dessus pour continuer."); return; }
   var t = totals(), key = state.offer + "-" + (state.sub ? state.plan : "none");
   var link = STRIPE_LINKS[key];
+  if (!state.myCode) state.myCode = makeCode();
   save();
   var payload = {
     _subject: "Nouvelle commande carte NFC — " + (state.info.nom || ""), source: "Commande carte NFC",
-    formule: t.o.name, abonnement: t.p ? t.p.name : "Aucun", total: fmt(t.total), parrain: ref || "Aucun",
+    formule: t.o.name, abonnement: t.p ? t.p.name : "Aucun", total: fmt(t.total), parrain: ref || "Aucun", code_parrainage_du_client: state.myCode, lien_parrainage_du_client: myLink(),
     nom: state.info.nom, activite: state.info.activite, email: state.info.email, telephone: state.info.telephone,
     liens: state.info.liens, adresse: state.info.adresse, message: state.info.message || ""
   };
@@ -548,7 +581,7 @@ function setupAgenda() {
   var p = new URLSearchParams();
   if (state.info.nom) p.set("name", state.info.nom);
   if (state.info.email) p.set("email", state.info.email);
-  p.set("notes", (totals().o.name) + (ref ? " — parrain " + ref : ""));
+  p.set("notes", (totals().o.name) + (ref ? " — parrain " + ref : "") + (state.myCode ? " — son code : " + state.myCode : ""));
   var url = BOOKING_URL + (BOOKING_URL.indexOf("?") > -1 ? "&" : "?") + p.toString();
   var frame = document.createElement("iframe");
   frame.src = url; frame.title = "Réserver mon appel"; frame.loading = "lazy";
@@ -572,6 +605,18 @@ document.querySelectorAll("[data-cta]").forEach(function (b) { b.addEventListene
 document.querySelectorAll("[data-go]").forEach(function (b) { b.addEventListener("click", function () { go(Number(b.dataset.go)); }); });
 document.getElementById("backBtn").addEventListener("click", function () { if (state.step === 2) readFormSoft(); go(Math.max(1, state.step - 1)); });
 document.getElementById("infoForm").addEventListener("submit", function (e) { e.preventDefault(); next(); });
+function copyLink(btn) {
+  var txt = myLink();
+  var done = function () { btn.textContent = "Copié !"; setTimeout(function () { btn.textContent = "Copier"; }, 1800); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, function () { window.prompt("Copie ton lien :", txt); });
+  else window.prompt("Copie ton lien :", txt);
+}
+document.getElementById("copyBtn").addEventListener("click", function () { copyLink(this); });
+document.getElementById("shareBtn").addEventListener("click", function () {
+  var data = { title: "Ma carte NFC", text: "Je viens de commander ma carte de visite NFC chez Attilio Design. Prends la tienne avec mon lien :", url: myLink() };
+  if (navigator.share) navigator.share(data).catch(function () {});
+  else copyLink(document.getElementById("copyBtn"));
+});
 function readFormSoft() { var f = document.getElementById("infoForm"); ["nom", "activite", "email", "telephone", "liens", "adresse", "message"].forEach(function (k) { state.info[k] = f.elements[k].value.trim(); }); save(); }
 
 function route() {
