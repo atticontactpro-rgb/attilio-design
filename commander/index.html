@@ -83,6 +83,16 @@ section { min-width: 0; }
 .offer .price { font-family: var(--display); font-size: 30px; letter-spacing: .02em; white-space: nowrap; }
 .offer .desc { font-size: 14px; font-weight: 500; opacity: .92; }
 @media (min-width: 640px) { .offer .row { flex-direction: column; align-items: flex-start; gap: 2px; } }
+.devis { margin-top: 14px; padding: 16px; border: 2px dashed var(--ink); background: transparent; display: grid; gap: 10px; }
+.devis .row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.devis .name { font-size: 17px; font-weight: 800; }
+.devis .price { font-family: var(--display); font-size: 24px; letter-spacing: .02em; white-space: nowrap; }
+.devis .desc { margin: 0; font-size: 14px; font-weight: 500; }
+.devis-btn, .devis-send { justify-self: start; min-height: 46px; padding: 10px 16px; border: 2px solid var(--ink); background: var(--ink); color: var(--white); font: inherit; font-weight: 800; cursor: pointer; box-shadow: 3px 3px 0 var(--red); }
+.devis-btn:hover, .devis-send:hover { background: var(--red); }
+.devis-form { display: grid; gap: 12px; margin-top: 4px; }
+.devis-err { margin: 0; color: var(--red); font-weight: 700; font-size: 14px; }
+.devis-ok { margin: 0; font-weight: 800; background: var(--white); border: 2px solid var(--ink); padding: 12px 14px; }
 .sub { background: var(--white); border: 2px solid var(--ink); box-shadow: 4px 5px 0 var(--ink); padding: 18px; display: grid; gap: 14px; }
 .sub-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .sub-title { font-size: 18px; font-weight: 800; }
@@ -251,16 +261,32 @@ footer .wrap { padding-block: 18px 22px; display: flex; flex-wrap: wrap; justify
           <div class="offers" role="radiogroup" aria-labelledby="h-offers" id="offers">
             <button type="button" class="offer" role="radio" aria-checked="true" data-offer="base">
               <span class="row"><span class="name">Carte + page</span><span class="price">50 €</span></span>
-              <span class="desc">Tu as déjà ton design, prêt à imprimer : je crée ta page avec tes liens, dans tes couleurs.</span>
+              <span class="desc">Ta carte NFC + ta page perso avec tes <b>boutons cliquables</b> (Instagram, site, téléphone, WhatsApp…), dans tes couleurs. Pour toi si tu as déjà le design de ta carte, prêt à imprimer.</span>
             </button>
             <button type="button" class="offer" role="radio" aria-checked="false" data-offer="design">
               <span class="row"><span class="name">Carte + page + design</span><span class="price">110 €<small style="display:block;font-family:var(--body);font-size:11.5px;font-weight:700;letter-spacing:0;text-align:right">en 2 fois</small></span></span>
-              <span class="desc">Je crée le design de ta carte et ta page. Un aller-retour de modifications inclus. Payé en 2 fois : 50 € aujourd'hui, puis 60 € pour le design, facturés après l'appel.</span>
+              <span class="desc">Ta carte NFC + ta page perso avec tes <b>boutons cliquables</b> (Instagram, site, téléphone, WhatsApp…). Je crée en plus le design de ta carte, un aller-retour de modifications inclus. Payé en 2 fois : 50 € aujourd'hui, puis 60 € pour le design, facturés après l'appel.</span>
             </button>
             <button type="button" class="offer" role="radio" aria-checked="false" data-offer="pack">
               <span class="row"><span class="name">Pack identité</span><span class="price">400 €<small style="display:block;font-family:var(--body);font-size:11.5px;font-weight:700;letter-spacing:0;text-align:right">en 2 fois</small></span></span>
-              <span class="desc">Création de ton logo et d'un univers graphique cohérent avec (couleurs, typos, style), appliqué à ta carte et à ta page. Payé en 2 fois : 50 € aujourd'hui, puis 350 € pour ton logo, facturés par notre designer après l'appel.</span>
+              <span class="desc">Ta carte NFC + ta page perso avec tes <b>boutons cliquables</b> (Instagram, site, téléphone, WhatsApp…), plus la création de ton logo et d'un univers graphique cohérent avec (couleurs, typos, style). Payé en 2 fois : 50 € aujourd'hui, puis 350 € pour ton logo, facturés par notre designer après l'appel.</span>
             </button>
+          </div>
+
+          <div class="devis" id="devis">
+            <div class="row"><span class="name">Site sur mesure</span><span class="price">Sur devis</span></div>
+            <p class="desc">Un vrai site créé pour ton activité, relié à ta carte NFC : présentation, services, galerie, prise de rendez-vous, boutique… Le prix dépend de ce que tu veux.</p>
+            <button type="button" class="devis-btn" id="devisBtn" aria-expanded="false" aria-controls="devisForm">Demander un devis →</button>
+            <form id="devisForm" class="devis-form" hidden novalidate>
+              <div class="field"><label for="d-nom">Nom et prénom</label><input id="d-nom" name="nom" autocomplete="name" required></div>
+              <div class="field"><label for="d-email">Email</label><input id="d-email" name="email" type="email" autocomplete="email" required></div>
+              <div class="field"><label for="d-tel">Téléphone <span class="opt">(facultatif)</span></label><input id="d-tel" name="telephone" type="tel" autocomplete="tel"></div>
+              <div class="field"><label for="d-act">Ton activité</label><input id="d-act" name="activite" required placeholder="Ex. coiffeuse à domicile, coach sportif…"></div>
+              <div class="field"><label for="d-msg">Ce que tu veux sur ton site</label><textarea id="d-msg" name="besoin" required placeholder="Pages, fonctionnalités, sites que tu aimes…"></textarea></div>
+              <button type="submit" class="devis-send">Envoyer ma demande</button>
+              <p class="devis-err" id="devisErr" hidden>Remplis ton nom, ton email, ton activité et ton besoin.</p>
+            </form>
+            <p class="devis-ok" id="devisOk" hidden>Merci ! Ta demande est bien envoyée, je te recontacte sous 48 h avec ton devis.</p>
           </div>
         </section>
 
@@ -624,6 +650,29 @@ document.getElementById("shareBtn").addEventListener("click", function () {
   var data = { title: "Ma carte NFC", text: "Je viens de commander ma carte de visite NFC chez Attilio Design. Prends la tienne avec mon lien :", url: myLink() };
   if (navigator.share) navigator.share(data).catch(function () {});
   else copyLink(document.getElementById("copyBtn"));
+});
+document.getElementById("devisBtn").addEventListener("click", function () {
+  var f = document.getElementById("devisForm"), open = f.hidden;
+  f.hidden = !open; this.setAttribute("aria-expanded", String(open));
+  if (open) document.getElementById("d-nom").focus();
+});
+document.getElementById("devisForm").addEventListener("input", function (e) { if (e.target.value.trim()) e.target.removeAttribute("aria-invalid"); });
+document.getElementById("devisForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  var f = this, ok = true, data = {};
+  ["d-nom", "d-email", "d-act", "d-msg"].forEach(function (id) {
+    var el = document.getElementById(id), bad = !el.value.trim() || (el.type === "email" && !/^\S+@\S+\.\S+$/.test(el.value.trim()));
+    el.setAttribute("aria-invalid", String(bad)); if (bad) ok = false;
+  });
+  document.getElementById("devisErr").hidden = ok;
+  if (!ok) return;
+  ["nom", "email", "telephone", "activite", "besoin"].forEach(function (k) { data[k] = (f.elements[k].value || "").trim(); });
+  data._subject = "Demande de devis — site sur mesure — " + data.nom;
+  data.parrain = ref || "Aucun";
+  var btn = f.querySelector(".devis-send"); btn.disabled = true; btn.textContent = "Envoi…";
+  fetch(FORM_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" }, body: JSON.stringify(data) })
+    .then(function (r) { if (!r.ok) throw 0; f.hidden = true; document.getElementById("devisBtn").hidden = true; document.getElementById("devisOk").hidden = false; })
+    .catch(function () { btn.disabled = false; btn.textContent = "Envoyer ma demande"; window.location.href = "mailto:atti.contactpro@gmail.com?subject=" + encodeURIComponent("Devis site sur mesure") + "&body=" + encodeURIComponent(data.activite + "\n\n" + data.besoin); });
 });
 function readFormSoft() { var f = document.getElementById("infoForm"); ["nom", "activite", "email", "telephone", "liens", "adresse", "message"].forEach(function (k) { state.info[k] = f.elements[k].value.trim(); }); save(); }
 
